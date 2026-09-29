@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pass1
+      POSTGRES_DATABASE: reporting
+    volumes:
+      - ./apps/psql/init:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  scripts:
+    build:
+      context: ./apps/scripts
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./apps/scripts:/app
+      - ./input:/input
+      - ./output:/output
+    env_file:
+      - ./env/scripts.env
+    working_dir: /app
+    command: tail -f /dev/null
